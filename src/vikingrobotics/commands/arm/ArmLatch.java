@@ -8,6 +8,7 @@
 package vikingrobotics.commands.arm;
 
 import vikingrobotics.misc.Debug;
+import vikingrobotics.misc.Utils;
 import vikingrobotics.commands.CommandBase;
 
 public class ArmLatch extends CommandBase {
@@ -34,11 +35,17 @@ public class ArmLatch extends CommandBase {
 			Debug.print("\tTimeout: " + timeout);
 			setTimeout(timeout);
 		}
-		Debug.print("\tTimeStarted: " + timeSinceInitialized());
+		Debug.print("\tTimeStarted: " + Utils.roundDecimals(timeSinceInitialized(), 5));
+		if (!arm.getSensorExtracted()) {
+			hasFinished = true;
+			Debug.print("\t[ERROR] ARM NOT EXTRACTED!");
+		}
 	}
 
 	protected void execute() {
 		arm.latch();
+		if (arm.getSensorLatch())
+			hasFinished = true;
 	}
 
 	protected boolean isFinished() {
@@ -46,12 +53,13 @@ public class ArmLatch extends CommandBase {
 	}
 
 	protected void end() {
-		Debug.println("\tTimeEnded: " + timeSinceInitialized());
+		Debug.println("\tTimeEnded: " + Utils.roundDecimals(timeSinceInitialized(), 5));
 		arm.stopLatch();
 	}
 
 	protected void interrupted() {
-		Debug.println("[interrupted] " + getName());
+		Debug.print("\tTimeEnded: " + Utils.roundDecimals(timeSinceInitialized(), 5));
+		Debug.println("\t[interrupted] " + getName());
 		arm.stopLatch();
 	}
 

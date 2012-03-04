@@ -12,8 +12,7 @@ import vikingrobotics.misc.Debug;
 import vikingrobotics.commands.CommandBase;
 
 public class ArmExtract extends CommandBase implements Constants {
-
-	private boolean sensorInvalid = false;
+	
 	private boolean hasFinished = false;
 	private double speed = 0.0;
 	private double timeout;
@@ -26,17 +25,13 @@ public class ArmExtract extends CommandBase implements Constants {
 	}
 
 	protected void initialize() {
-		arm.setSpeed(this.speed);
-		hasFinished = false;
-		if (arm.getSensorExtracted()) {
-			sensorInvalid = true;
-			hasFinished = true;
-		}
 		setTimeout(timeout);
+		hasFinished = false;
+		arm.setSpeed(this.speed);
 		Debug.print("[" + this.getName() + "] Speed: " + this.speed);
 		Debug.print("\tTimeout: " + timeout);
 		Debug.print("\tSensorExtracted: " + arm.getSensorExtracted());
-		Debug.println("\tSensorRetracted: " + arm.getSensorRetracted());
+		Debug.print("\tSensorRetracted: " + arm.getSensorRetracted());
 	}
 
 	protected void execute() {
@@ -50,11 +45,12 @@ public class ArmExtract extends CommandBase implements Constants {
 	}
 
 	protected void end() {
-		if(sensorInvalid) Debug.println("[error] Sensor invalid when trying to extract");
+		Debug.println("\tSensorExtracted: " + arm.getSensorExtracted());
 		arm.stop();
 	}
 
 	protected void interrupted() {
+		Debug.println("\tSensorExtracted: " + arm.getSensorExtracted());
 		Debug.println("[interrupted] " + getName());
 		arm.stop();
 	}

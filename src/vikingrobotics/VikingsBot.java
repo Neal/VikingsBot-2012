@@ -11,6 +11,7 @@ import vikingrobotics.commands.CommandBase;
 import vikingrobotics.commands.autonomous.Auton1;
 import vikingrobotics.misc.Constants;
 import vikingrobotics.misc.Debug;
+import vikingrobotics.misc.Utils;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -38,37 +39,40 @@ public class VikingsBot extends IterativeRobot implements Constants {
 		CommandBase.init();
 		timer.stop();
 		SmartDashboard.putData(Scheduler.getInstance());
-		Debug.println("[robotInit] Done in " + timer.get() * .001 + " ms");
+		Debug.println("[robotInit] Done in " + timer.get() * 1e6 + " ms");
 	}
 
-    /**
-     * Initialization code for autonomous mode which will be called each time
-     * the robot enters autonomous mode.
-     */
+	/**
+	 * Initialization code for autonomous mode which will be called each time
+	 * the robot enters autonomous mode.
+	 */
 	public void autonomousInit() {
 		Debug.println("[mode] Autonomous");
 		commonInit();
-		autonomousCommand.start();
+		
+		// Don't want autonomous unless at competition, to prevent accidental usage.
+		//autonomousCommand.start();
 	}
 
-    /**
-     * Periodic code for autonomous mode which will be called periodically at a regular
-     * rate while the robot is in autonomous mode.
-     */
+	/**
+	 * Periodic code for autonomous mode which will be called periodically at a regular
+	 * rate while the robot is in autonomous mode.
+	 */
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		updateDashboard();
 	}
 	
-    /**
-     * Continuous code for autonomous mode which will be called repeatedly as frequently
-     * as possible while the robot is in autonomous mode.
-     */
+	/**
+	 * Continuous code for autonomous mode which will be called repeatedly as frequently
+	 * as possible while the robot is in autonomous mode.
+	 */
 	public void autonomousContinuous() {}
 
-    /**
-     * Initialization code for teleop mode which will be called each time
-     * the robot enters teleop mode.
-     */
+	/**
+	 * Initialization code for teleop mode which will be called each time
+	 * the robot enters teleop mode.
+	 */
 	public void teleopInit() {
 		Debug.println("[mode] Operator control");
 		if (autonomousCommand != null)
@@ -76,50 +80,47 @@ public class VikingsBot extends IterativeRobot implements Constants {
 		commonInit();
 	}
 
-    /**
-     * Periodic code for teleop mode which will be called periodically at a regular
-     * rate while the robot is in teleop mode.
-     */
+	/**
+	 * Periodic code for teleop mode which will be called periodically at a regular
+	 * rate while the robot is in teleop mode.
+	 */
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateDashboard();
-		
-		// Need to find out what buttons 11 and 12 are.
-		if(CommandBase.oi.getGamePad().getButton(11)) Debug.println("[gamepad] Button 11");
-		if(CommandBase.oi.getGamePad().getButton(12)) Debug.println("[gamepad] Button 12");
 	}
+
 	
-    /**
-     * Continuous code for teleop mode which will be called repeatedly as frequently
-     * as possible while the robot is in teleop mode.
-     */
+	/**
+	 * Continuous code for teleop mode which will be called repeatedly as frequently
+	 * as possible while the robot is in teleop mode.
+	 */
 	public void teleopContinuous() {}
 	
-    /**
-     * Initialization code for disabled mode which will be called each time
-     * the robot enters disabled mode.
-     */
+	/**
+	 * Initialization code for disabled mode which will be called each time
+	 * the robot enters disabled mode.
+	 */
 	public void disabledInit() {
 		Debug.println("[mode] Disabled");
 		commonInit();
 	}
 
-    /**
-     * Periodic code for disabled mode which will be called periodically at a regular
-     * rate while the robot is in disabled mode.
-     */
+	/**
+	 * Periodic code for disabled mode which will be called periodically at a regular
+	 * rate while the robot is in disabled mode.
+	 */
 	public void disabledPeriodic() {}
 	
-    /**
-     * Continuous code for disabled mode which will be called repeatedly as frequently
-     * as possible while the robot is in disabled mode.
-     */
+	/**
+	 * Continuous code for disabled mode which will be called repeatedly as frequently
+	 * as possible while the robot is in disabled mode.
+	 */
 	public void disabledContinuous() {}
 	
-    /**
-     * A common initialization code for all modes which will be called each time
-     * disabledInit(), autonomousInit(), or teleopInit() is called.
-     */
+	/**
+	 * A common initialization code for all modes which will be called each time
+	 * disabledInit(), autonomousInit(), or teleopInit() is called.
+	 */
 	public void commonInit() {
 		if(firstTime) {
 			CommandBase.oi.getDS().print(1, "Robot Ready!");
@@ -128,23 +129,20 @@ public class VikingsBot extends IterativeRobot implements Constants {
 	}
 	
 	/**
-	 * Update the SmartDashboard and the UserMessages from one place to avoid confusion.
+	 * Update the SmartDashboard, DriverStation and the UserMessages from one place to avoid confusion.
 	 */
 	public void updateDashboard() {
-		SmartDashboard.putDouble("Battery Percent", CommandBase.oi.getDS().getBatteryVoltage() * 100 / kMaxBatteryVoltage);
+		SmartDashboard.putDouble("Battery Percent", Utils.scaleBatteryVoltage(CommandBase.oi.getDS().getDS().getBatteryVoltage()));
 		SmartDashboard.putDouble("Sonar", CommandBase.drivetrain.getSonarDistance());
-		SmartDashboard.putDouble("Gyro", CommandBase.shooter.getGyroAngle());
 		SmartDashboard.putDouble("Shooter Speed", CommandBase.shooter.getSpeed());
-		SmartDashboard.putDouble("ShooterSpeed", CommandBase.shooter.getActualSpeed());
+		SmartDashboard.putDouble("ShooterSpeed", CommandBase.shooter.getSpeed());
 		SmartDashboard.putBoolean("SystemActive", isSystemActive());
 		SmartDashboard.putBoolean("SensorExtracted", CommandBase.arm.getSensorExtracted());
 		SmartDashboard.putBoolean("SensorRetracted", CommandBase.arm.getSensorRetracted());
-//		CommandBase.oi.getDS().print(2, "2: " + CommandBase.shooter.getSpeed());
-//		CommandBase.oi.getDS().print(3, "3: " + CommandBase.oi.getDS().getAnalogIn(1));
-		CommandBase.oi.getDS().print(4, "4: " + (Math.ceil(CommandBase.shooter.getGyroAngle() * 1000) / 1000));
-//		CommandBase.oi.getDS().print(5, "Ex: " + CommandBase.arm.getSensorRetracted() + " | " + SmartDashboard.getDouble("TestDouble", 0.1));
-//		CommandBase.oi.getDS().print(6, "Re: " + new ArmRun().isRunning());
-		//CommandBase.drivetrain.printEncoders(5);
+		SmartDashboard.putBoolean("SensorLatch", CommandBase.arm.getSensorLatch());
+		CommandBase.oi.getDS().getDS().setDigitalOut(kDSDigitalOutputSensorExtracted, CommandBase.arm.getSensorExtracted());
+		CommandBase.oi.getDS().getDS().setDigitalOut(kDSDigitalOutputSensorRetracted, CommandBase.arm.getSensorRetracted());
+		CommandBase.oi.getDS().getDS().setDigitalOut(kDSDigitalOutputSensorLatch, CommandBase.arm.getSensorLatch());
 	}
 	
 }

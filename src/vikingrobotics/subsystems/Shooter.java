@@ -8,6 +8,7 @@
 package vikingrobotics.subsystems;
 
 import vikingrobotics.commands.CommandBase;
+import vikingrobotics.commands.shooter.ShooterMove;
 import vikingrobotics.misc.Debug;
 import vikingrobotics.misc.RobotMap;
 import edu.wpi.first.wpilibj.Gyro;
@@ -25,31 +26,22 @@ public class Shooter extends Subsystem {
 	private Jaguar flyWheel;
 	private Jaguar feeder;
 	private Relay angler;
-	private Gyro gyro;
-	private double currentAngle, previousAngle;
 	private double speed = 1.0;
-	private boolean angleSet = false;
-	private final static double speedTolerance = 2.0;
-	private final static double angleTolerance = 1.0;
-	private final static double defaultGyroAngle = 30;
 	
 	public Shooter() {
 		super("Shooter");
+		Debug.println("[Shooter] Initializing FlyWheel jaguar on channel " + RobotMap.kShooterFlyWheelChannel);
 		flyWheel = new Jaguar(RobotMap.kShooterFlyWheelChannel);
+		Debug.println("[Shooter] Initializing Feeder jaguar on channel " + RobotMap.kShooterFeederChannel);
 		feeder = new Jaguar(RobotMap.kShooterFeederChannel);
+		Debug.println("[Shooter] Initializing Angler relay on channel " + RobotMap.kShooterAnglerChannel);
 		angler = new Relay(RobotMap.kShooterAnglerChannel);
-		Debug.println("[robot] Initializing shooter motor on channel " + RobotMap.kShooterFlyWheelChannel);
-		Debug.println("[robot] Initializing feeder motor on channel " + RobotMap.kShooterFeederChannel);
-		Debug.println("[robot] Initializing angler relay on channel " + RobotMap.kShooterAnglerChannel);
-		gyro = new Gyro(RobotMap.kGyroChannel);
-		gyro.setSensitivity(0.007);
-		gyro.reset();
-		currentAngle = defaultGyroAngle + SmartDashboard.getDouble("TestDouble", 0.0);
-		previousAngle = currentAngle;
-//		resetCurrentGyroAngle();
+		Debug.println("[Shooter] Initializing gyro on channel " + RobotMap.kGyroChannel);
 	}
 	
-	public void initDefaultCommand() {}
+	public void initDefaultCommand() {
+		setDefaultCommand(new ShooterMove());		
+	}
 	
 	// Set manual speed for the flyWheel
 	public void setSpeed(double speed) {
@@ -106,41 +98,6 @@ public class Shooter extends Subsystem {
 	public void moveStop() {
 		SmartDashboard.putString("ShooterMove", "Stop");
 		angler.set(Relay.Value.kOff);
-	}
-	
-	// Set the current shooter angle
-	public void setAngle(double angle) {
-		if (this.currentAngle != angle) {
-			this.previousAngle = currentAngle;
-			this.currentAngle = angle;
-		}
-	}
-	
-	public void resetGyro() {
-		gyro.reset();
-	}
-	
-	public void resetCurrentGyroAngle() {
-		this.currentAngle = defaultGyroAngle + ((CommandBase.oi.getDS().getAnalogIn(2) * 10) - 25);
-	}
-	
-	public void changingAngle() {
-		this.currentAngle -= gyro.getAngle();
-	}
-	
-	public double getGyroAngle() {
-		return currentAngle;
-	}
-	
-
-	/**
-	 * Checks if the current RPM is within the
-	 * tolerance range of the desired RPM.
-	 * @return atSetPoint
-	 */
-	public boolean isAtSetPoint() {
-		Debug.println("FlywheelSpeed: " +flyWheel.get()+ "\tSpeed: " +this.speed+ "\tDiff: " +(Math.abs(flyWheel.get() - this.speed)));
-		return (Math.abs(flyWheel.get() - this.speed) < 0.05);  // FIND TOLERANCE_RPM
 	}
 
 }

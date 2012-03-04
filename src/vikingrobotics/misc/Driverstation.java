@@ -8,7 +8,6 @@
 package vikingrobotics.misc;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStationEnhancedIO;
 import edu.wpi.first.wpilibj.DriverStationLCD;
 import edu.wpi.first.wpilibj.DriverStationLCD.Line;
 
@@ -16,9 +15,9 @@ import edu.wpi.first.wpilibj.DriverStationLCD.Line;
  * 
  * @author Neal
  */
-public class Driverstation extends DriverStation implements Constants {
+public class Driverstation implements Constants {
 	
-	private static Driverstation instance = null;
+	private DriverStation DS;
 	private DriverStationIO IO;
 	private DriverStationLCD LCD;
 	private static final int kDefaultStartColumn = 1;
@@ -35,17 +34,15 @@ public class Driverstation extends DriverStation implements Constants {
 	
 	public Driverstation() {
 		IO = new DriverStationIO();
+		DS = DriverStation.getInstance();
 		LCD = DriverStationLCD.getInstance();
-		clearAll();
+		clearConsole();
 		print(1, "Initializing...");
 	}
 	
-	public static Driverstation getInstance() {
-		if (instance == null)
-			instance = new Driverstation();
-		return instance;
-	}
-	
+	public DriverStation getDS() {
+		return DS;
+	}	
 	
 	/**
 	 * Prints the specified string on the User Messages starting from the begining.
@@ -72,7 +69,7 @@ public class Driverstation extends DriverStation implements Constants {
 	 * Clear a specified line.
 	 * @param lineNumber The line to be cleared.
 	 */
-	public void clear(int lineNumber) {
+	public void clearConsole(int lineNumber) {
 		print(lineNumber, kDefaultStartColumn, kDefaultMessage);
 	}
 	
@@ -80,10 +77,10 @@ public class Driverstation extends DriverStation implements Constants {
 	 * Clear all lines.
 	 * 
 	 */
-	public void clearAll() {
+	public void clearConsole() {
 		for (int i = 1; i <= 6; i++) {
-			print(i, kDefaultStartColumn, kDefaultMessage);
+			clearConsole(i);
 		}
 	}
-
+	
 }

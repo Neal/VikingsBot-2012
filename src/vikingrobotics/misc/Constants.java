@@ -17,9 +17,14 @@ public interface Constants {
 	
 	public static final double kMaxBatteryVoltage = 13.0;
 	
-	public static final double kArmSpeed = 0.8;
-	public static final double kArmSlowSpeed = 0.3;
+	public static final double kArmSpeed = 1.0;
+	public static final double kArmSlowSpeed = 0.4;
 	public static final double kArmLatchSpeed = 0.8;
+
+	public static final double kTimeFeedOneBall = 0.4;
+	public static final double kShooterUp = 1.0;
+	public static final double kShooterDown = -1.0;
+	public static final boolean kShooterForceFeed = true;
 
 	public static final double kRobotWidth = 38;
 	public static final double kRobotLength = 28;
@@ -36,18 +41,6 @@ public interface Constants {
 	public static final double kHoopHeightLow = 28;
 	public static final double kHoopInnerRadius = 9;
 	public static final double kHoopInnerDiameter = kHoopInnerRadius*2;
-
-	public static final double DIST_FENDER_TO_KEY = 110;
-	public static final double DIST_ALLIANCEWALL_TO_KEY = 144;
-	public static final double DIST_ALLIANCEWALL_TO_BRIDGE = 280.4;
-	public static final double kBumperEdgeToWheelCenter = 7.5;
-	public static final double kFenderDepth = 38.5;
-	public static final double DIST_TO_FENDER = DIST_FENDER_TO_KEY - (kRobotWidthWithBumpers - kBumperEdgeToWheelCenter);
-	public static final double DIST_TO_BRIDGE = DIST_ALLIANCEWALL_TO_BRIDGE - kFenderDepth - kRobotWidthWithBumpers -2;
-
-	public static final double kTimeFeedOneBall = 0.4;
-	public static final double kShooterUp = 1.0;
-	public static final double kShooterDown = -1.0;
 
 	public static final double kJoystickThreshold = 0.2;
 	
@@ -70,8 +63,6 @@ public interface Constants {
 	public static final int kGamepadButtonStart = 8;
 	public static final int kGamepadButtonLeftStick = 9;
 	public static final int kGamepadButtonRightStick = 10;
-	public static final int kGamepadButtonMode = 11;		// ?
-	public static final int kGamepadButtonLogitech = 12;	// ?
 
 	// Joystick (Extreme 3D Pro) axes
 	public static final int kJoystickAxisX = 1;
@@ -127,14 +118,25 @@ public interface Constants {
 	public static final int kJoystick2ButtonRightBottom = 10;
 	public static final int kJoystick2ButtonRightTop = 11;
 	
-	// Driver Station Digital Input
+	// Driver Station Digital Inputs
 	public static final int kDSDigitalInputShooterOnJ2 = 1;
 	public static final int kDSDigitalInputShooterAI1 = 2;
 	public static final int kDSDigitalInputArcadeDrive = 3;
 	public static final int kDSDigitalInputDisableDrive = 4;
-	public static final int kDSDigitalInput5 = 5;
+	public static final int kDSDigitalInputSlowDrive = 5;
 	public static final int kDSDigitalInput6 = 6;
 	public static final int kDSDigitalInput7 = 7;
 	public static final int kDSDigitalInputDebugMode = 8;
+	
+	// Driver Station Digital Outputs
+	public static final int kDSDigitalOutputSensorExtracted = 1;
+	public static final int kDSDigitalOutputSensorRetracted = 2;
+	public static final int kDSDigitalOutputSensorLatch = 3;
+	
+	// Driver Station Analog Inputs
+	public static final int kDSAnalogInput1 = 1;
+	public static final int kDSAnalogInput2 = 2;
+	public static final int kDSAnalogInput3 = 3;
+	public static final int kDSAnalogInput4 = 4;
 
 }
