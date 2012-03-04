@@ -7,14 +7,12 @@
 
 package vikingrobotics.commands.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import vikingrobotics.misc.Constants;
 import vikingrobotics.misc.Debug;
 import vikingrobotics.commands.CommandBase;
 
 public class ShooterRun extends CommandBase implements Constants {
 
-	private boolean hasFinished = false;
 	private boolean hasSpeed = false;
 	private double speed = 0.0;
 	
@@ -35,23 +33,28 @@ public class ShooterRun extends CommandBase implements Constants {
 	}
 
 	protected void execute() {
-		if(!hasSpeed) {
-			if(oi.getDS().getDigitalIn(kDSDigitalInputShooterOnJ2)) {
+		/*
+		 * If we didn't call ShooterRun with speed, get speed from the joystick throttle.
+		 */
+		if (!hasSpeed) {
+			/*
+			 * If DigitalInput for ShooterOnJ2 on DS is on, get speed from Attack3 Throttle
+			 */
+			if(oi.getDS().getDS().getDigitalIn(kDSDigitalInputShooterOnJ2)) {
 				speed = oi.getJoystick2().getJoystickThrottle(kJoystick2AxisThrottle);
 			}
-			else if(oi.getDS().getDigitalIn(kDSDigitalInputShooterAI1)) {
-				speed = oi.getDS().getAnalogIn(1) / 5;
-			}
+			/*
+			 * If DigitalInput for ShooterOnJ2 on DS is off, get speed from Extreme 3D Throttle
+			 */
 			else {
 				speed = oi.getJoystick().getJoystickThrottle(kJoystickAxisThrottle);
 			}
 		}
 		shooter.run(this.speed);
-		SmartDashboard.putDouble("ShooterSpeed", this.speed);
 	}
 
 	protected boolean isFinished() {
-		return isTimedOut() || hasFinished;
+		return isTimedOut();
 	}
 
 	protected void end() {
